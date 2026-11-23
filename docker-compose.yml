@@ -1,0 +1,17 @@
+name: livewave
+services:
+  backend:
+    build: ./backend
+    ports: ["11400:11400"]
+    volumes:
+      - livewave_data:/data
+      - ./fixtures:/fixtures:ro
+    environment:
+      数据目录: /data
+      夹具目录: /fixtures
+  frontend:
+    build: ./frontend
+    ports: ["6400:80"]
+    depends_on: [backend]
+volumes:
+  livewave_data:

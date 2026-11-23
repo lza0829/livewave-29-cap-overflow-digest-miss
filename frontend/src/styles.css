@@ -1,0 +1,106 @@
+:root {
+  --底: #0f1418;
+  --顶: #151c22;
+  --块: #1a232c;
+  --块亮: #22303a;
+  --线: #2e3d49;
+  --字: #e8eef2;
+  --淡: #8fa3b0;
+  --焰: #f0a14a;
+  --焰弱: rgba(240, 161, 74, 0.16);
+  --水: #4eb3c5;
+  --通: #5faf7a;
+  --败: #d16666;
+  --通底: rgba(95, 175, 122, 0.14);
+  --败底: rgba(209, 102, 102, 0.12);
+  font-family: "Source Han Sans SC", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+* { box-sizing: border-box }
+body { margin: 0; background: var(--底); color: var(--字) }
+.壳 { min-height: 100vh; display: flex; flex-direction: column }
+.顶栏 {
+  background: linear-gradient(180deg, #1a242e 0%, var(--顶) 100%);
+  border-bottom: 1px solid var(--线);
+  padding: 0.85rem 1.4rem 0;
+}
+.顶上行 { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.75rem }
+.牌名 { font-size: 1.4rem; letter-spacing: 0.28em; color: var(--焰); font-weight: 700 }
+.牌骨 { color: var(--淡); font-size: 0.78rem }
+.管线 {
+  display: flex; gap: 0.2rem; overflow-x: auto; padding-bottom: 0;
+}
+.管线 a {
+  color: var(--淡); text-decoration: none; padding: 0.55rem 0.9rem 0.65rem;
+  border-bottom: 2px solid transparent; white-space: nowrap; font-size: 0.9rem;
+}
+.管线 a.亮, .管线 a:hover { color: var(--字); border-bottom-color: var(--焰) }
+.管线 a.次链 { color: #6d7f8c; font-size: 0.82rem }
+.管线 a.次链.亮 { color: var(--淡); border-bottom-color: var(--线) }
+.主 { padding: 1.35rem 1.5rem 2.2rem; max-width: 1180px; width: 100%; margin: 0 auto }
+.题 { font-size: 1.28rem; margin: 0 0 0.3rem }
+.述 { color: var(--淡); margin: 0 0 1.1rem; font-size: 0.9rem; line-height: 1.55; max-width: 52rem }
+.阶条 {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.45rem;
+  margin-bottom: 1.2rem;
+}
+.阶 {
+  background: var(--块); border: 1px solid var(--线); border-radius: 6px;
+  padding: 0.65rem 0.7rem; position: relative;
+}
+.阶 .序 { color: var(--焰); font-size: 0.72rem; letter-spacing: 0.08em; margin-bottom: 0.2rem }
+.阶 b { display: block; font-size: 1.2rem; font-variant-numeric: tabular-nums; color: var(--字) }
+.阶 span { color: var(--淡); font-size: 0.74rem }
+.格 { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.65rem; margin-bottom: 1rem }
+.卡 {
+  background: var(--块); border: 1px solid var(--线); padding: 0.8rem 0.85rem; border-radius: 6px;
+}
+.卡 b { display: block; font-size: 1.3rem; color: var(--焰); font-variant-numeric: tabular-nums }
+.卡 span { color: var(--淡); font-size: 0.75rem }
+.行 { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.95rem; align-items: center }
+button {
+  background: var(--焰); color: #1a1208; border: 0; padding: 0.42rem 0.9rem;
+  border-radius: 4px; cursor: pointer; font: inherit; font-weight: 600;
+}
+button:hover { filter: brightness(1.05) }
+button.次 { background: transparent; border: 1px solid var(--线); color: var(--字); font-weight: 500 }
+button.次.亮片 { border-color: var(--焰); color: var(--焰); background: var(--焰弱) }
+button.水 { background: var(--水); color: #062028 }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem }
+th, td { border-bottom: 1px solid var(--线); padding: 0.48rem 0.35rem; text-align: left; vertical-align: top }
+th { color: var(--淡); font-weight: 500 }
+.讯 { margin: 0.5rem 0; color: var(--淡) }
+.空态 {
+  padding: 1.3rem; border: 1px dashed var(--线); border-radius: 6px;
+  color: var(--淡); text-align: center; margin: 0.5rem 0 1rem;
+}
+.段 { margin-top: 1.25rem }
+.段题 { font-size: 0.88rem; margin: 0 0 0.55rem; color: var(--水); font-weight: 600; letter-spacing: 0.04em }
+.徽章 { display: inline-block; padding: 0.12rem 0.45rem; border-radius: 3px; font-size: 0.76rem; font-weight: 600 }
+.徽章.通 { background: var(--通底); color: var(--通) }
+.徽章.败 { background: var(--败底); color: var(--败) }
+.证板 {
+  display: grid; grid-template-columns: 200px 1fr; gap: 0.85rem; margin-bottom: 1rem;
+}
+.证旗 {
+  border-radius: 8px; padding: 1rem 0.9rem; border: 1px solid var(--线);
+  display: flex; flex-direction: column; justify-content: center; gap: 0.3rem;
+}
+.证旗.通 { background: var(--通底); border-color: rgba(95,175,122,0.4) }
+.证旗.败 { background: var(--败底); border-color: rgba(209,102,102,0.4) }
+.证旗 .标 { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.1em }
+.证旗.通 .标 { color: var(--通) }
+.证旗.败 .标 { color: var(--败) }
+.证旗 .辅 { color: var(--淡); font-size: 0.8rem; line-height: 1.4 }
+.码 { font-family: ui-monospace, Consolas, monospace; font-size: 0.8rem }
+.报箱 {
+  background: var(--块); border: 1px solid var(--线); border-radius: 6px;
+  padding: 0.75rem; white-space: pre-wrap; margin-bottom: 0.9rem; max-height: 220px; overflow: auto;
+}
+.提示条 {
+  background: var(--焰弱); border-left: 3px solid var(--焰);
+  padding: 0.55rem 0.75rem; margin-bottom: 1rem; color: var(--字); font-size: 0.86rem; line-height: 1.45;
+}
+@media (max-width: 860px) {
+  .阶条 { grid-template-columns: repeat(2, 1fr) }
+  .证板 { grid-template-columns: 1fr }
+}
