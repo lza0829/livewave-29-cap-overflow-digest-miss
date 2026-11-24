@@ -3,6 +3,7 @@ import json
 from app.db import 连接
 from app.seed import 此刻
 from app.services import 上限闸
+from app.modules import 超额摘要
 
 
 def 跑贯验() -> dict:
@@ -10,6 +11,9 @@ def 跑贯验() -> dict:
 
     上限闸同口径互证：任何窗主指标不得越热度上限；撤回单不得把窗推过上限；
     超上限旁路须在旁路匣留证且事件确为已旁路未挂窗。
+
+    超额摘要（甲·摘要入窗额封顶回滚）协同：上限处置成功摘要不空、摘要号可现算、
+    摘要与窗合计不分叉（合计不跌破摘要入窗额）、撤回扣减不超过摘要入窗额。
     """
     conn = 连接()
     try:
@@ -76,6 +80,18 @@ def 跑贯验() -> dict:
             elif ev["命运"] != "已旁路" or ev["窗键"] != "":
                 问题.append(f"超上限旁路{编号}事件命运{ev['命运']}与留证不符")
 
+        # 超额摘要（甲·摘要入窗额封顶回滚）四面对账
+        摘要数 = conn.execute("SELECT COUNT(*) FROM 超额摘要").fetchone()[0]
+        问题.extend(超额摘要.全库问题(conn, 站规上限=上限))
+        for r in conn.execute(
+            "SELECT 窗键, 事件编号, (旧点赞-新点赞) AS 扣减 FROM 撤回单 WHERE 原因='迟到撤回'"
+        ):
+            d = 超额摘要.事件摘要(conn, r["窗键"], r["事件编号"])
+            if d is not None and int(r["扣减"]) > int(d["实际入窗额"]):
+                问题.append(
+                    f"撤回{r['事件编号']}扣减{r['扣减']}超过摘要入窗额{d['实际入窗额']}"
+                )
+
         通过 = 1 if not 问题 else 0
         说明 = "窗输出与事件/撤回互证通过" if 通过 else "；".join(问题)[:800]
         conn.execute(
@@ -90,6 +106,7 @@ def 跑贯验() -> dict:
             "已关闭窗数": len(已关闭),
             "撤回数": 撤回数,
             "旁路数": 旁路数,
+            "超额摘要数": 摘要数,
             "说明": 说明,
             "问题": 问题,
         }

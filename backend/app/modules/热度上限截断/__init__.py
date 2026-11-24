@@ -8,9 +8,15 @@
 失败闭：闸口判定与窗/撤回/旁路写入同事务，与迟到修正、关窗扫描交错
 要么整体生效要么整体回滚，禁止半截；落库即真相，不只截展示。
 
-实现：app/services/上限闸.py（闸口判定/留证/只读闸况）；
+超额摘要（甲·摘要入窗额封顶回滚）：上限处置成功必须同票写超额摘要
+（app/modules/超额摘要），摘要写失败整批回滚；迟到撤回按摘要实际入窗额封顶扣减，
+被旁路部分不得回滚入窗。
+
+实现：app/services/上限闸.py（闸口判定/留证/摘要同票/只读闸况）；
 闸口接在 app/services/装载.py 入流与迟到修正两处；
-互证在 app/services/贯验.py；只读接口 GET /api/上限闸、GET /api/上限闸/窗?窗键=…；
-夹具 fixtures/超上限旁路样例.json、fixtures/超额迟到并发样例.json。
+互证在 app/services/贯验.py（含摘要四面对账）；只读接口
+GET /api/上限闸、GET /api/上限闸/窗?窗键=…、GET /api/核证/超额摘要；
+夹具 fixtures/超上限旁路样例.json、fixtures/超额迟到并发样例.json、
+fixtures/触顶后再撤回.json、fixtures/触顶全额回滚.json。
 """
 状态 = "已实现"

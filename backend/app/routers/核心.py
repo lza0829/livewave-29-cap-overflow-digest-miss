@@ -1,8 +1,11 @@
 import json
+import sqlite3
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.db import 夹具目录, 连接
+from app.modules import 超额摘要
 from app.services import 上限闸, 装载, 贯验, 目录
 
 路由 = APIRouter(prefix="/api")
@@ -148,7 +151,14 @@ def 列批次():
 
 @路由.post("/装载")
 def 做装载(体: 装载请求):
-    return 装载.装一批(体.model_dump())
+    try:
+        return 装载.装一批(体.model_dump())
+    except (装载.撤回违例, 超额摘要.摘要违例) as e:
+        raise HTTPException(409, f"失败闭（整票回滚）：{e}") from e
+    except sqlite3.OperationalError as e:
+        if "locked" in str(e).lower():
+            raise HTTPException(409, f"入流并发冲突（写锁竞争），失败闭拒绝：{e}") from e
+        raise HTTPException(500, str(e)) from e
 
 
 @路由.post("/装载/夹具")
@@ -156,7 +166,14 @@ def 装夹具(名: str = "准时热度样例"):
     路径 = 夹具目录 / f"{名}.json"
     if not 路径.exists():
         raise HTTPException(404, f"夹具不存在:{名}")
-    return 装载.装一批(json.loads(路径.read_text(encoding="utf-8")))
+    try:
+        return 装载.装一批(json.loads(路径.read_text(encoding="utf-8")))
+    except (装载.撤回违例, 超额摘要.摘要违例) as e:
+        raise HTTPException(409, f"失败闭（整票回滚）：{e}") from e
+    except sqlite3.OperationalError as e:
+        if "locked" in str(e).lower():
+            raise HTTPException(409, f"入流并发冲突（写锁竞争），失败闭拒绝：{e}") from e
+        raise HTTPException(500, str(e)) from e
 
 
 @路由.post("/贯验")
@@ -184,6 +201,7 @@ from app.modules import 超额摘要 as 超
 
 @路由.get("/核证/超额摘要")
 def 取超额摘要(窗键: str | None = None):
+    """超额摘要核证只读接口：与上限写闸/旁路匣/撤回簿/热度页/对齐核验协同。纯读不写。"""
     conn = 连接()
     try:
         return 超.查超额摘要(conn, 窗键)
